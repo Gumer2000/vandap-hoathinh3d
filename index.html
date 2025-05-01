@@ -68,10 +68,20 @@
   <img src="assets/banner.jpg" alt="Banner" style="width:100%; border-radius: 8px; margin-bottom: 20px;">
   <div class="container">
     <h1>🔍 Vấn Đáp Hoathinh3D- Lạc Hoa Phong</h1>
-    <input type="text" id="searchBox" placeholder="Nhập từ khóa câu hỏi hoặc đáp án...">
+    <div style="position: relative;">
+      <input type="text" id="searchBox" placeholder="Nhập từ khóa câu hỏi hoặc đáp án..." 
+            style="width: 100%; padding-right: 85px;">
+      <span onclick="clearInput()" 
+            style="position:absolute; right:50px; top:50%; transform:translateY(-50%);
+                  cursor:pointer; color:red; font-size:18px;">❌</span>
+      <span onclick="pasteFromClipboard()" 
+            style="position:absolute; right:15px; top:50%; transform:translateY(-50%);
+                  cursor:pointer; color:#007BFF; font-size:18px;">📝</span>
+    </div>
     <div class="result" id="resultBox"></div>
   </div>
   <footer>Được thực hiện bởi Sammy.T</footer>
+
   <script>
     const quizBank = {
       "Ai là huynh đệ và cũng là người thầy mà Vương Lâm trong Tiên Nghịch kính trọng nhất ?": "Tư Đồ Nam",
@@ -225,7 +235,6 @@
       "1 Trong 2 Admin của website HoatHinh3D là ai ? (Biệt danh chính xác ở web)": "Từ Dương",
       "Tỉnh Cửu là nhân vật chính trong bộ phim hoạt hình trung quốc nào sau đây ?": "Đại Đạo Triều Thiên",
       "Tần Nam là nhân vật chính trong bộ hoạt hình trung quốc nào sau đây ?": "Tuyệt Thế Chiến Hồn",
-
     };
 
     const searchBox = document.getElementById("searchBox");
@@ -252,6 +261,21 @@
         resultBox.appendChild(box);
       });
     });
+
+    function clearInput() {
+      document.getElementById("searchBox").value = "";
+      document.getElementById("resultBox").innerHTML = "";
+      document.getElementById("searchBox").focus();
+    }
+
+    function pasteFromClipboard() {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById("searchBox").value = text;
+        document.getElementById("searchBox").dispatchEvent(new Event('input'));
+      }).catch(err => {
+        alert("Không thể dán. Trình duyệt không cho phép hoặc clipboard trống.");
+      });
+    }
   </script>
 </body>
 </html>

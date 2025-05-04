@@ -1,89 +1,348 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vấn Đáp Hoathinh3d - Lạc Hoa Phong</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font đẹp cho tiêu đề + nội dung -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
+      min-height: 100vh;
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #ece9e6, #ffffff);
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
+      /* Gradient + họa tiết bokeh */
+      background: linear-gradient(120deg, #efe6dd 0%, #ece2ff 51%, #a8c0ff 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+    .dm-toggle {
+      position: absolute;
+      top: 28px; right: 12vw;
+      z-index: 12;
+    }
+    .dm-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+      vertical-align: middle;
+    }
+    .dm-switch input {
+      opacity: 0;
+      width: 0;height: 0;
+    }
+    .dm-slider {
+      position: absolute; cursor:pointer;
+      top: 0; left:0; right:0; bottom:0;
+      background: #faeddc;
+      border-radius: 16px;
+      border:1.5px solid #e5d1b2;
+      box-shadow: 0 2px 9px #ecd49d12;
+      transition: background .2s;
+      display: flex; align-items: center; padding: 0 6px; justify-content: space-between;
+    }
+    .dm-slider .dm-icon {
+      width: 15px; height: 15px; transition: opacity .22s;
+      display: inline-flex; justify-content: center; align-items: center;
+    }
+    .dm-icon-moon { opacity:0; }
+    .dm-switch input:checked + .dm-slider {
+      background: #423b48;
+      border:1.5px solid #826339;
+    }
+    .dm-switch input:checked + .dm-slider .dm-icon-sun { opacity:0; }
+    .dm-switch input:checked + .dm-slider .dm-icon-moon { opacity:1; }
+    .dm-switch input + .dm-slider .dm-icon-sun { opacity:1; }
+    .dm-switch input + .dm-slider .dm-icon-moon { opacity:0; }
+    .dm-slider:before {
+      content: '';
+      position: absolute;
+      left: 3px; top: 50%;
+      transform: translateY(-50%);
+      width: 18px;height: 18px;
+      background: #fff3cd;
+      border-radius: 50%;
+      box-shadow: 0 2px 7px #fae7b9b0;
+      transition: left .21s, background .2s;
+      border: 1.2px solid #f7e0b9;
+    }
+    .dm-switch input:checked + .dm-slider:before {
+      left: 27px;
+      background: #23212d;
+      border: 1.2px solid #46364c;
+      box-shadow: 0 2px 8px #2b1d39b6;
+    }
+    /* Darkmode cho switch */
+    body.darkmode .dm-slider {
+      background: #423b48;
+      border:1.5px solid #826339;
+    }
+    body.darkmode .dm-slider:before {
+      background: #23212d;
+      border-color: #46364c;
+      box-shadow: 0 2px 8px #2b1d39b6;
+    }
+
+    /* Hiệu ứng bokeh light */
+    .bokeh {
+      position: fixed;
+      z-index: 0;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+    }
+    .bokeh span {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .13;
+      filter: blur(6px);
+      mix-blend-mode: lighten;
+      animation: bokehFloat 9s linear infinite alternate;
+    }
+    @keyframes bokehFloat {
+      100% {
+        transform: translateY(-32px) scale(1.05);
+        opacity: .18;
+      }
+    }
+
+    .banner-container {
+      max-width: 840px;
+      margin: 32px auto 0 auto;
+      z-index: 2;
+      position: relative;
+      padding-bottom: 18px;
+    }
+    .banner-img {
+      width: 100%; border-radius: 14px;
+      box-shadow: 0 8px 36px rgba(40,26,24,0.14);
+      object-fit: cover;
     }
     .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 540px;
+      margin: 36px auto 30px auto;
+      padding: 32px 24px 28px 24px;
+      background: rgba(255,255,255,0.62);
+      border-radius: 22px;
+      box-shadow: 0 12px 32px 8px rgba(136,48,71,0.13);
+      backdrop-filter: blur(10px) saturate(114%);
+      z-index: 3;
+      position: relative;
     }
     h1 {
       text-align: center;
-      color: #333;
-      margin-bottom: 30px;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #a55425;
+      letter-spacing: 2px;
+      margin-bottom: 26px;
+      text-shadow: 1px 2px 10px #dfa36b16, 0 6px 18px #b87d383d;
     }
-    input[type="text"] {
+    .searchbar-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .searchbar {
       width: 100%;
-      padding: 12px 15px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 14px 52px 14px 18px;
+      font-size: 17px;
+      border-radius: 12px;
+      border: 1.5px solid #e0bc99;
+      background: rgba(249,246,242,.84);
       box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+      transition: box-shadow 0.25s;
+      box-shadow: 0 2px 12px rgba(205,149,110,0.09);
+      color: #000;
     }
+    .searchbar:focus {
+      box-shadow: 0 6px 22px #dfa36b14;
+      outline: 1.5px solid #c9a274;
+    }
+    .action-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border-radius: 7px;
+      background: transparent;
+      transition: background 0.17s, box-shadow 0.17s;
+      user-select: none;
+    }
+    .action-icon:hover {
+      background: #ffe8da;
+      box-shadow: 0 2px 8px #eed1b667;
+    }
+    .icon-clear { right: 45px; color: #e9593c; }
+    .icon-paste { right: 12px; color: #2277ee; }
+
+    .search-info {
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: #b37835;
+      margin: 13px 0 11px 4px;
+      padding-bottom: 2px;
+      letter-spacing: .5px;
+      border-left: 3px solid #cfa055;
+      padding-left: 10px;
+      display: none;
+    }
+    .search-info.active {
+      display: block;
+      animation: fadeIn .7s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .result {
-      margin-top: 20px;
+      margin-top: 5px;
+      z-index: 3;
+      position: relative;
     }
     .qa-box {
-      background: #f9f9f9;
-      border-left: 4px solid #007BFF;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
+      background: rgba(253,249,244,0.97);
+      border-left: 5px solid #cfa055;
+      border-radius: 13px;
+      box-shadow: 0 3px 14px #e9ccb622;
+      padding: 17px 21px 14px 17px;
+      margin-bottom: 20px;
+      animation: fadeIn .7s both;
+      position: relative;
     }
     .question {
       font-weight: 700;
-      color: #222;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      color: #7a3416;
+      font-family: 'Noto Serif SC', serif;
+      letter-spacing: 0.3px;
     }
     .answer {
-      margin-top: 8px;
-      color: #006400;
+      font-size: 1rem;
+      color: #1b7330;
+      font-weight: 500;
+      margin-top: 1px;
     }
     .no-result {
-      margin-top: 20px;
+      margin-top: 18px;
+      margin-bottom: 10px;
       text-align: center;
-      color: #888;
+      color: #999;
+      font-size: 1.01rem;
     }
     footer {
-      text-align:center;
-      margin-top: 40px;
-      color:#888;
+      text-align: center;
+      margin-top: 48px;
+      color: #897d72;
       font-size: 14px;
+      text-shadow: 0 1px 2px #fff7e977;
+    }
+    /* Responsive thiết yếu */
+    @media (max-width: 620px) {
+      .container { max-width: 98vw; padding: 18px 3vw; }
+      .banner-container { max-width: 99vw; margin-top: 17px; }
+      h1 { font-size: 1.38rem; }
+      .qa-box { font-size: 0.99rem; }
+      .dm-toggle {
+        right: 6vw;
+        top: 20px;
+      }
+    }
+
+    /* DARK MODE SAU ĐÂY */
+    body.darkmode {
+      background: linear-gradient(120deg, #23202a 0%, #363142 55%, #232c39 100%);
+    }
+    body.darkmode .container {
+      background: rgba(28,24,32,0.93);
+      box-shadow: 0 2px 26px 6px #453a2e54;
+    }
+    body.darkmode h1, body.darkmode .question {
+      color: #ffc085;
+      text-shadow: 0 1px 12px #7b532019, 0 6px 18px #b87d3864;
+    }
+    body.darkmode .searchbar, body.darkmode .searchbar:focus {
+      background: #2d2533;
+      color: #eccb95;
+      border: 1.5px solid #b99b5e;
+      box-shadow: 0 3px 15px #6950233a;
+    }
+    body.darkmode .search-info {
+      border-left: 3px solid #ffb65a;
+      color: #efcb9a;
+    }
+    body.darkmode .qa-box {
+      background: #292031f3;
+      border-left: 5px solid #e0be62;
+      box-shadow: 0 3px 10px #807255b7;
+    }
+    body.darkmode .answer {
+      color: #e1deae;
+    }
+    body.darkmode .no-result {
+      color: #fff2b0;
+    }
+    body.darkmode footer {
+      color: #b6a87e;
+      text-shadow: 0 1px 2px #32241273;
     }
   </style>
 </head>
 <body>
-  <img src="assets/banner.jpg" alt="Banner" style="width:100%; border-radius: 8px; margin-bottom: 20px;">
+  <!-- EFFECT LAYER: BOKEH CIRCLE -->
+  <div class="bokeh">
+    <span style="background:#ff9393;width:88px;height:88px;left:62vw;top:6vh;"></span>
+    <span style="background:#dfb77e;width:44px;height:44px;left:14vw;top:27vh;"></span>
+    <span style="background:#8ecce3;width:54px;height:54px;left:43vw;top:38vh;"></span>
+    <span style="background:#fcb16c;width:61px;height:61px;left:33vw;top:12vh;"></span>
+    <span style="background:#cfa055;width:40px;height:40px;right:10vw;top:41vh;"></span>
+    <span style="background:#eedfe2;width:34px;height:34px;left:17vw;bottom:7vh;"></span>
+    <span style="background:#adbeff;width:80px;height:80px;right:8vw;bottom:6vh;"></span>
+  </div>
+  <div class="banner-container">
+    <img src="assets/banner.jpg" alt="Banner" class="banner-img" />
+  </div>
+  <div class="dm-toggle" id="darkModeToggle" title="Bật/Tắt chế độ tối">
+    <label class="dm-switch">
+      <input type="checkbox" id="dmSwitchInput" aria-label="Chuyển dark/light mode"/>
+      <span class="dm-slider">
+        <span class="dm-icon dm-icon-sun">
+          <svg width="15" height="15" viewBox="0 0 20 20"><circle cx="10" cy="10" r="4" fill="#ffd600"/><g stroke="#ffb100" stroke-width="1.25"><line x1="10" y1="1.2" x2="10" y2="3.1"/><line x1="10" y1="16.9" x2="10" y2="18.8"/><line x1="18.8" y1="10" x2="16.9" y2="10"/><line x1="3.1" y1="10" x2="1.2" y2="10"/><line x1="15.1" y1="4.9" x2="13.7" y2="6.3"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="15.1" y1="15.1" x2="13.7" y2="13.7"/><line x1="4.9" y1="15.1" x2="6.3" y2="13.7"/></g></svg>
+        </span>
+        <span class="dm-icon dm-icon-moon">
+          <svg width="15" height="15" viewBox="0 0 20 20"><path d="M17 13a7 7 0 0 1-7-7 6 6 0 1 0 7 7z" fill="#ffecca" stroke="#997e5b" stroke-width="1.2"/></svg>
+        </span>
+      </span>
+    </label>
+  </div>
   <div class="container">
-    <h1>🔍 Vấn Đáp Hoathinh3D- Lạc Hoa Phong</h1>
-    <div style="position: relative;">
-      <input type="text" id="searchBox" placeholder="Nhập từ khóa câu hỏi hoặc đáp án..." 
-            style="width: 100%; padding-right: 85px;">
-      <span onclick="clearInput()" 
-            style="position:absolute; right:50px; top:50%; transform:translateY(-50%);
-                  cursor:pointer; color:red; font-size:18px;">❌</span>
-      <span onclick="pasteFromClipboard()" 
-            style="position:absolute; right:15px; top:50%; transform:translateY(-50%);
-                  cursor:pointer; color:#007BFF; font-size:18px;">📝</span>
+    <h1>🔍 Vấn Đáp Hoathinh3D - <span style="color:#7a3416;">Lạc Hoa Phong</span></h1>
+    <div class="searchbar-wrap">
+      <input type="text" id="searchBox" class="searchbar" placeholder="Nhập từ khóa câu hỏi hoặc đáp án..." />
+      <span class="action-icon icon-clear" title="Xóa" onclick="clearInput()">
+        <!-- SVG X icon -->
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#fff7f5"/><path d="M6.2 6.2l7.6 7.6M13.8 6.2l-7.6 7.6" stroke="#e9593c" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
+      <span class="action-icon icon-paste" title="Dán từ clipboard" onclick="pasteFromClipboard()">
+        <!-- SVG Paste icon -->
+        <svg width="19" height="19" viewBox="0 0 21 21" fill="none"><rect x="5" y="7" width="11" height="9" rx="2" fill="#f4f2ec" stroke="#1577f3" stroke-width="1.5"/><path d="M7.2 7V5a1 1 0 0 1 1-1h4.6a1 1 0 0 1 1 1v2" stroke="#254d91" stroke-width="1.2"/><rect x="8.5" y="3.5" width="4" height="2" rx="1" fill="#fff" stroke="#254d91" stroke-width="1"/></svg>
+      </span>
     </div>
+    <div class="search-info" id="searchInfo"></div>
     <div class="result" id="resultBox"></div>
   </div>
   <footer>Được thực hiện bởi Sammy.T</footer>
 
   <script>
     const quizBank = {
+      
       "Ai là huynh đệ và cũng là người thầy mà Vương Lâm trong Tiên Nghịch kính trọng nhất ?": "Tư Đồ Nam",
       "Ai là mẹ của Đường Tam?": "A Ngân",
       "Ai là người đứng đầu Vũ Hồn Điện?": "Bỉ Bỉ Đông",
@@ -239,21 +498,32 @@
 
     const searchBox = document.getElementById("searchBox");
     const resultBox = document.getElementById("resultBox");
+    const searchInfo = document.getElementById("searchInfo");
 
     searchBox.addEventListener("input", () => {
       const keyword = searchBox.value.toLowerCase().trim();
       resultBox.innerHTML = "";
-      if (keyword.length === 0) return;
+      searchInfo.classList.remove('active');
+      if (keyword.length === 0) {
+        searchInfo.textContent = '';
+        return;
+      }
 
       const matches = Object.entries(quizBank).filter(([q, a]) =>
         q.toLowerCase().includes(keyword) || a.toLowerCase().includes(keyword)
       );
-
+      // Hiển thị thông báo tìm thấy bao nhiêu kết quả
+      if (matches.length > 0) {
+        searchInfo.textContent = `Tìm được ${matches.length} kết quả với từ khóa "${searchBox.value}"`;
+        searchInfo.classList.add('active');
+      } else {
+        searchInfo.textContent = '';
+        searchInfo.classList.remove('active');
+      }
       if (matches.length === 0) {
         resultBox.innerHTML = "<div class='no-result'>Không tìm thấy kết quả phù hợp.</div>";
         return;
       }
-
       matches.forEach(([question, answer]) => {
         const box = document.createElement("div");
         box.className = "qa-box";
@@ -263,19 +533,42 @@
     });
 
     function clearInput() {
-      document.getElementById("searchBox").value = "";
-      document.getElementById("resultBox").innerHTML = "";
-      document.getElementById("searchBox").focus();
+      searchBox.value = "";
+      resultBox.innerHTML = "";
+      searchInfo.textContent = '';
+      searchInfo.classList.remove('active');
+      searchBox.focus();
     }
-
     function pasteFromClipboard() {
       navigator.clipboard.readText().then(text => {
-        document.getElementById("searchBox").value = text;
-        document.getElementById("searchBox").dispatchEvent(new Event('input'));
+        searchBox.value = text;
+        searchBox.dispatchEvent(new Event('input'));
       }).catch(err => {
         alert("Không thể dán. Trình duyệt không cho phép hoặc clipboard trống.");
       });
     }
+
+    // DARK MODE toggle bằng switch
+    const dmInput = document.getElementById('dmSwitchInput');
+    const bodyEl = document.body;
+    // Nếu từng lưu trạng thái darkmode -> set checked ban đầu
+    if(localStorage.getItem('van_dap_lhp_darkmode')==='1') {
+      bodyEl.classList.add('darkmode');
+      dmInput.checked = true;
+    } else {
+      bodyEl.classList.remove('darkmode');
+      dmInput.checked = false;
+    }
+    dmInput.addEventListener('change', function() {
+      const isDark = dmInput.checked;
+      if (isDark) {
+        bodyEl.classList.add('darkmode');
+        localStorage.setItem('van_dap_lhp_darkmode', '1');
+      } else {
+        bodyEl.classList.remove('darkmode');
+        localStorage.setItem('van_dap_lhp_darkmode','0');
+      }
+    });
   </script>
 </body>
 </html>
